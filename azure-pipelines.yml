@@ -1,0 +1,17 @@
+trigger:
+- main
+
+pool: D65
+
+steps:
+- script: npm install
+  displayName: 'Download NodeJS Dependencies'
+
+- script: docker build -t catalogue .
+  displayName: 'Docker Build'
+
+- script: |
+    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 633788536644.dkr.ecr.us-east-1.amazonaws.com
+    docker tag catalogue:latest 633788536644.dkr.ecr.us-east-1.amazonaws.com/catalogue:latest
+    docker push 633788536644.dkr.ecr.us-east-1.amazonaws.com/catalogue:latest
+  displayName: 'Docker Push Image to ECR'
